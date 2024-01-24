@@ -100,6 +100,61 @@ def display_random_image_grid_with_labels(folder_path, num_rows, num_cols):
     plt.tight_layout()
     plt.show()
 
+def select_percentage_of_data(src_dir, dest_dir, percentage):
+    """
+    Select a specified percentage of data from each subdirectory in the source directory and copy it to the destination directory.
+
+    Parameters:
+    - src_dir (str): The path to the source directory containing subdirectories representing categories.
+    - dest_dir (str): The path to the destination directory where the selected data will be copied.
+    - percentage (float): The percentage of data to select from each subdirectory.
+
+    Returns:
+    None
+
+    This function iterates over each subdirectory in the source directory, selects a specified
+    percentage of files randomly, and copies them to the corresponding subdirectory in the
+    destination directory.
+
+    Example:
+    ```python
+    source_directory = "/path/to/source/data"
+    destination_directory = "/path/to/destination/data"
+    select_percentage_of_data(source_directory, destination_directory, percentage=10.0)
+    ```
+
+    In this example, the function selects 10% of data from each subdirectory in the source
+    directory and copies it to the corresponding subdirectory in the destination directory.
+    """
+    # Get the list of subdirectories (each subdirectory represents a category)
+    categories = os.listdir(src_dir)
+
+    # Create the destination directory if it doesn't exist
+    os.makedirs(dest_dir, exist_ok=True)
+
+    # Iterate over each category
+    for category in categories:
+        category_src_dir = os.path.join(src_dir, category)
+        category_dest_dir = os.path.join(dest_dir, category)
+
+        # Get the list of all files in the current category
+        all_files = os.listdir(category_src_dir)
+
+        # Calculate the number of files to select based on the percentage
+        num_files_to_select = int(len(all_files) * (percentage / 100))
+
+        # Randomly select files
+        selected_files = random.sample(all_files, num_files_to_select)
+
+        # Create the destination directory for the current category
+        os.makedirs(category_dest_dir, exist_ok=True)
+
+        # Copy selected files to the destination directory
+        for file in selected_files:
+            src_path = os.path.join(category_src_dir, file)
+            dest_path = os.path.join(category_dest_dir, file)
+            shutil.copy(src_path, dest_path)
+   
 
 
 
