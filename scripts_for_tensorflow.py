@@ -3,6 +3,8 @@ import shutil
 import random
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
+import cv2
+import numpy as np
 
 def create_subset_directory(original_dir, subset_dir, percentage=0.1):
     """
@@ -156,6 +158,23 @@ def select_percentage_of_data(src_dir, dest_dir, percentage):
             shutil.copy(src_path, dest_path)
    
 
+def select_random_image(class_names, dataset):
+  class_name = random.choice(class_names)
+  filename = random.choice(os.listdir(dataset + "/" + class_name))
+  filepath = val_dir_10_percent + "/" + class_name + "/" + filename
+  return filepath
 
 
-
+def predictor(img, model, train_dataset, label_names):
+    image = cv2.imread(img)
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    image = cv2.resize(image, (224, 224))
+    image = np.array(image, dtype = 'float32')/255.0
+    plt.imshow(image)
+    image = image.reshape(1, 224,224,3)
+    
+    
+    dict_class = dict(zip(list(range(len(label_names))), label_names))
+    clas = model.predict(image).argmax()
+    name = dict_class[clas]
+    print('The given image is of \nClass: {0} \nAnimal: {1}'.format(clas, name))
