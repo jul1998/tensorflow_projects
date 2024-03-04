@@ -178,3 +178,14 @@ def predictor(img, model, train_dataset, label_names):
     clas = model.predict(image).argmax()
     name = dict_class[clas]
     print('The given image is of \nClass: {0} \nAnimal: {1}'.format(clas, name))
+
+
+def get_sample_from_df(percentage, df):
+  # Specify the percentage of data you want to sample (e.g., 10%)
+  percentage_to_sample = percentage
+
+  # Use the sample method to get the specified percentage
+  sampled_df = df.sample(frac=percentage_to_sample / 100)
+
+  # Display the sampled DataFrame
+  return sampled_df
