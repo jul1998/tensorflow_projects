@@ -5,6 +5,13 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import cv2
 import numpy as np
+import re
+import pandas as pd
+import nltk
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+from nltk.stem import WordNetLemmatizer
+
 
 def create_subset_directory(original_dir, subset_dir, percentage=0.1):
     """
@@ -189,3 +196,32 @@ def get_sample_from_df(percentage, df):
 
   # Display the sampled DataFrame
   return sampled_df
+
+
+def text_preprocessing(text):
+    text = re.sub(r'[^a-zA-Z\s]', "", str(text))
+    whitespace = re.compile(r"\s+")
+    web_address = re.compile(r"(?i)http(s):\/\/[a-z0-9.~_\-\/]+")
+    user = re.compile(r"(?i)@[a-z0-9_]+")
+    text = re.sub(r'[^\w\s]', '', str(text))
+    text = re.sub(r'http\S+', '', str(text))
+    text = whitespace.sub(' ', text)
+    text = web_address.sub('', text)
+    text = user.sub('', text)
+    text = re.sub(r"\n", "", text)
+    text = re.sub(r"\d+", "", text)
+    text = re.sub(r'[^\w\s]', '', text)
+    text = text.lower()
+    return text
+
+def remove_stopwords(text):
+    stop_words = set(stopwords.words('english'))
+    words = word_tokenize(text)
+    filtered_text = [word for word in words if word.lower() not in stop_words]
+    return ' '.join(filtered_text)
+
+def lemmatize_text(text):
+    lemmatizer = WordNetLemmatizer()
+    words = word_tokenize(text)
+    lemmatized_words = [lemmatizer.lemmatize(word) for word in words]
+    return ' '.join(lemmatized_words)
