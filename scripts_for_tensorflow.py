@@ -247,3 +247,9 @@ def check_df(df, head=5):
       print("-" * 80)
       print(f"Quantiles:\n{df.quantile([0.05, 0.25, 0.5, 0.75, 0.95])}")
       print("-" * 80)
+
+
+def get_columns(df):
+  num_attribs = df.select_dtypes(include=[np.number]).columns.tolist()
+  cat_attribs = [col for col in df.columns if col not in num_attribs] 
+  return num_attribs, cat_attribs
