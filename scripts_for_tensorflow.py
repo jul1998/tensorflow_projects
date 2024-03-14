@@ -225,3 +225,25 @@ def lemmatize_text(text):
     words = word_tokenize(text)
     lemmatized_words = [lemmatizer.lemmatize(word) for word in words]
     return ' '.join(lemmatized_words)
+
+def check_df(df, head=5):
+      """
+      Prints a summary of a dataframe.
+    
+      Args:
+          df: A Pandas DataFrame.
+          head: The number of rows to print from the head of the DataFrame.
+      """
+      print("-" * 80)
+      print(f"DataFrame Shape: {df.shape}")
+      print("-" * 80)
+      print(f"Data types:\n{df.dtypes}")
+      print("-" * 80)
+      print(f"Head {head}:\n{df.head(head)}")
+      print("-" * 80)
+      print(f"Tail {head}:\n{df.tail(head)}")
+      print("-" * 80)
+      print(f"Missing values:\n{df.isnull().sum()}")
+      print("-" * 80)
+      print(f"Quantiles:\n{df.quantile([0.05, 0.25, 0.5, 0.75, 0.95])}")
+      print("-" * 80)
