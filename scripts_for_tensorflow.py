@@ -214,6 +214,12 @@ def text_preprocessing(text):
     text = text.lower()
     return text
 
+
+# import nltk
+# nltk.download('stopwords')
+# import nltk
+# nltk.download('punkt')
+
 def remove_stopwords(text):
     stop_words = set(stopwords.words('english'))
     words = word_tokenize(text)
