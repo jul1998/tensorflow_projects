@@ -219,6 +219,8 @@ def text_preprocessing(text):
 # nltk.download('stopwords')
 # import nltk
 # nltk.download('punkt')
+# import nltk
+# nltk.download('wordnet')
 
 def remove_stopwords(text):
     stop_words = set(stopwords.words('english'))
