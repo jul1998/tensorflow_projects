@@ -266,7 +266,7 @@ def get_columns(df):
 
 
 
-def check_valid_images(base_path):
+def check_valid_images(base_path,remove_image=False):
     """
     Check all files in the specified base path to ensure they are valid images.
 
@@ -285,6 +285,9 @@ def check_valid_images(base_path):
                     img.verify()  # verify that it is, in fact, an image
             except (IOError, SyntaxError) as e:
                 print(f"Invalid image file found: {file_path} - {e}")
+                if remove_image:
+                  os.remove(file_path)
+                  print(f"File Removed: {file_path}")
                 valid_images = False
 
     return valid_images
