@@ -261,3 +261,31 @@ def get_columns(df):
   num_attribs = df.select_dtypes(include=[np.number]).columns.tolist()
   cat_attribs = [col for col in df.columns if col not in num_attribs] 
   return num_attribs, cat_attribs
+
+
+
+
+
+def check_valid_images(base_path):
+    """
+    Check all files in the specified base path to ensure they are valid images.
+
+    Parameters:
+        base_path (str): The base directory path to start checking for images.
+
+    Returns:
+        bool: True if all files are valid images, False if any file is not a valid image.
+    """
+    valid_images = True
+    for root, dirs, files in os.walk(base_path):
+        for file in files:
+            file_path = os.path.join(root, file)
+            print(file_path)
+            try:
+                with Image.open(file_path) as img:
+                    img.verify()  # verify that it is, in fact, an image
+            except (IOError, SyntaxError) as e:
+                print(f"Invalid image file found: {file_path} - {e}")
+                valid_images = False
+
+    return valid_images
