@@ -291,3 +291,44 @@ def check_valid_images(base_path,remove_image=False):
                 valid_images = False
 
     return valid_images
+
+
+
+def plot_learning_curve(model, X, y):
+  from sklearn.model_selection import learning_curve
+  import numpy as np
+  import matplotlib.pyplot as plt
+
+  # Generate learning curve data
+  train_sizes, train_scores, test_scores = learning_curve(
+      model, X, y, cv=5, train_sizes=np.linspace(0.1, 1.0, 10), scoring='accuracy'
+  )
+
+  # Calculate mean and standard deviation of scores
+  train_mean = np.mean(train_scores, axis=1)
+  train_std = np.std(train_scores, axis=1)
+  test_mean = np.mean(test_scores, axis=1)
+  test_std = np.std(test_scores, axis=1)
+
+  # Plot the learning curve
+  plt.figure(figsize=(10, 6))
+  plt.plot(train_sizes, train_mean, 'o-', color='r', label='Training score')
+  plt.plot(train_sizes, test_mean, 'o-', color='g', label='Cross-validation score')
+  plt.fill_between(train_sizes, train_mean - train_std, train_mean + train_std, alpha=0.1, color='r')
+  plt.fill_between(train_sizes, test_mean - test_std, test_mean + test_std, alpha=0.1, color='g')
+  plt.xlabel('Training examples')
+  plt.ylabel('Accuracy')
+  plt.title('Learning Curve')
+  plt.legend(loc='best')
+  plt.grid(True)
+  plt.show()
+
+
+def create_evaluation_df(y_test, model):
+  y_predictions = model.predict(X_test)
+  evalute_df = pd.DataFrame({'Actual': y_test, 'Predicted': y_predictions, "is_correct": y_test == y_predictions})
+
+ 
+  evalute_df.groupby('is_correct').size().plot(kind='barh', color=sns.palettes.mpl_palette('Dark2'))
+  plt.gca().spines[['top', 'right',]].set_visible(False)
+  return evalute_df
