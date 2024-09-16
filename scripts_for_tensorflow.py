@@ -324,7 +324,52 @@ def plot_learning_curve(model, X, y):
   plt.show()
 
 
-def create_evaluation_df(y_test, model):
+
+def evaluate_model_on_train_test_datasets(model, X_train, y_train, X_test, y_test):
+  from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
+
+  """
+  Evaluates a model on training and test sets and prints the results.
+
+  Args:
+    model: The trained machine learning model.
+    X_train: Training data features.
+    y_train: Training data labels.
+    X_test: Test data features.
+    y_test: Test data labels.
+  """
+
+  # Make predictions on training and test sets
+  y_train_pred = model.predict(X_train)
+  y_test_pred = model.predict(X_test)
+
+  # Calculate metrics for training set
+  train_accuracy = accuracy_score(y_train, y_train_pred)
+  train_precision = precision_score(y_train, y_train_pred)
+  train_recall = recall_score(y_train, y_train_pred)
+  train_f1 = f1_score(y_train, y_train_pred)
+
+  # Calculate metrics for test set
+  test_accuracy = accuracy_score(y_test, y_test_pred)
+  test_precision = precision_score(y_test, y_test_pred)
+  test_recall = recall_score(y_test, y_test_pred)
+  test_f1 = f1_score(y_test, y_test_pred)
+
+  # Print the results
+  print("Training Set Metrics:")
+  print(f"Accuracy: {train_accuracy:.4f}")
+  print(f"Precision: {train_precision:.4f}")
+  print(f"Recall: {train_recall:.4f}")
+  print(f"F1-Score: {train_f1:.4f}")
+
+  print("\nTest Set Metrics:")
+  print(f"Accuracy: {test_accuracy:.4f}")
+  print(f"Precision: {test_precision:.4f}")
+  print(f"Recall: {test_recall:.4f}")
+  print(f"F1-Score: {test_f1:.4f}")
+
+
+def create_evaluation_df(y_test, X_test, model):
   y_predictions = model.predict(X_test)
   evalute_df = pd.DataFrame({'Actual': y_test, 'Predicted': y_predictions, "is_correct": y_test == y_predictions})
 
