@@ -370,6 +370,7 @@ def evaluate_model_on_train_test_datasets(model, X_train, y_train, X_test, y_tes
 
 
 def create_evaluation_df(y_test, X_test, model):
+  import seaborn as sns
   y_predictions = model.predict(X_test)
   evalute_df = pd.DataFrame({'Actual': y_test, 'Predicted': y_predictions, "is_correct": y_test == y_predictions})
 
