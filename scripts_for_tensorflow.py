@@ -13,7 +13,7 @@ from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 from scipy.stats import chi2_contingency
 import seaborn as sns
-
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 
 def create_subset_directory(original_dir, subset_dir, percentage=0.1):
     """
@@ -444,5 +444,43 @@ def bivariate_analysis_categorical(df, col1, col2, top_n=None):
     plt.title(f"Relationship between {col1} and {col2}")
   plt.xticks(rotation=45)
   plt.show()
+
+def plot_learning_metrics(model, X, y, scoring_metrics=['accuracy', 'f1', 'precision'], cv=5):
+    """
+    Plots learning curves for multiple scoring metrics.
+
+    Args:
+        model: The machine learning model to evaluate.
+        X: The feature matrix.
+        y: The target variable.
+        scoring_metrics: A list of scoring metrics to evaluate (default: ['accuracy', 'f1', 'roc_auc']).
+        cv: Number of cross-validation folds (default: 5).
+    """
+
+    plt.figure(figsize=(12, 6))
+
+    for metric in scoring_metrics:
+        train_sizes, train_scores, test_scores = learning_curve(
+            model, X, y, cv=cv, scoring=metric
+        )
+
+        train_scores_mean = np.mean(train_scores, axis=1)
+        train_scores_std = np.std(train_scores, axis=1)
+        test_scores_mean = np.mean(test_scores, axis=1)
+        test_scores_std = np.std(test_scores, axis=1)
+
+        plt.plot(train_sizes, train_scores_mean, 'o-', label=f"Training {metric}")
+        plt.plot(train_sizes, test_scores_mean, 'o-', label=f"Cross-validation {metric}")
+        plt.fill_between(train_sizes, train_scores_mean - train_scores_std,
+                         train_scores_mean + train_scores_std, alpha=0.1)
+        plt.fill_between(train_sizes, test_scores_mean - test_scores_std,
+                         test_scores_mean + test_scores_std, alpha=0.1)
+
+    plt.title("Learning Curves")
+    plt.xlabel("Training examples")
+    plt.ylabel("Score")
+    plt.legend(loc="best")
+    plt.grid()
+    plt.show()
 
 
