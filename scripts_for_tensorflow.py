@@ -14,6 +14,7 @@ from nltk.stem import WordNetLemmatizer
 from scipy.stats import chi2_contingency
 import seaborn as sns
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
+from sklearn.model_selection import learning_curve
 
 def create_subset_directory(original_dir, subset_dir, percentage=0.1):
     """
