@@ -11,6 +11,8 @@ import nltk
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
+from scipy.stats import chi2_contingency
+import seaborn as sns
 
 
 def create_subset_directory(original_dir, subset_dir, percentage=0.1):
@@ -378,3 +380,69 @@ def create_evaluation_df(y_test, X_test, model):
   evalute_df.groupby('is_correct').size().plot(kind='barh', color=sns.palettes.mpl_palette('Dark2'))
   plt.gca().spines[['top', 'right',]].set_visible(False)
   return evalute_df
+
+
+def univariate_analysis(df, column, top_n=None):
+  """
+  Performs univariate analysis on a specified column of a DataFrame.
+
+  Args:
+    df: pandas DataFrame.
+    column: Name of the column to analyze.
+    top_n: Number of top values to display (default: None, shows all).
+  """
+  if top_n:
+    print(f"\nFrequency table for '{column}' (Top {top_n}):")
+    print(df[column].value_counts().nlargest(top_n).reset_index().T.to_markdown(index=False, numalign="left", stralign="left"))
+
+    plt.figure(figsize=(10, 6))
+    sns.countplot(data=df, x=column, order=df[column].value_counts().nlargest(top_n).index)
+    plt.title(f'Distribution of {column} (Top {top_n})')
+  else:
+    print(f"\nFrequency table for '{column}':")
+    print(df[column].value_counts().reset_index().T.to_markdown(index=False, numalign="left", stralign="left"))
+
+    plt.figure(figsize=(10, 6))
+    sns.countplot(data=df, x=column)
+    plt.title(f'Distribution of {column}')
+  
+  plt.xticks(rotation=45)
+  plt.show()
+
+
+def bivariate_analysis_categorical(df, col1, col2, top_n=None):
+  """
+  Performs bivariate analysis for two categorical columns,
+  including cross-tabulation and a heatmap.
+
+  Args:
+    df: pandas DataFrame.
+    col1: Name of the first categorical column.
+    col2: Name of the second categorical column.
+    top_n: Number of top values to display for col1 (default: None, shows all).
+  """
+  if top_n:
+    top_values = df[col1].value_counts().nlargest(top_n).index
+    df_filtered = df[df[col1].isin(top_values)]
+    print(f"\nCross-tabulation of '{col1}' (Top {top_n}) and '{col2}':")
+    crosstab = pd.crosstab(df_filtered[col1], df_filtered[col2])
+  else:
+    print(f"\nCross-tabulation of '{col1}' and '{col2}':")
+    crosstab = pd.crosstab(df[col1], df[col2])
+  
+
+  # Chi-square test
+  chi2, p, dof, expected = chi2_contingency(crosstab)
+  print(f"\nChi-square statistic: {chi2:.4f}")
+  print(f"P-value: {p:.4f}")
+
+  plt.figure(figsize=(10, 6))
+  sns.heatmap(crosstab, annot=True, cmap="YlGnBu", fmt="d")
+  if top_n:
+    plt.title(f"Relationship between {col1} (Top {top_n}) and {col2}")
+  else:
+    plt.title(f"Relationship between {col1} and {col2}")
+  plt.xticks(rotation=45)
+  plt.show()
+
+
