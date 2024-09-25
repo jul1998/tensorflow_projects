@@ -485,3 +485,12 @@ def plot_learning_metrics(model, X, y, scoring_metrics=['accuracy', 'f1', 'preci
     plt.show()
 
 
+def plot_feature_distribution(df, column):
+  plt.figure(figsize=(10, 6))
+  sns.histplot(df[column], kde=True)
+  plt.title(f'Distribution of {column}')
+  plt.xlabel(column)
+  plt.ylabel('Frequency')
+  plt.show()
+
+    
