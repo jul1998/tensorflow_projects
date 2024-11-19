@@ -508,3 +508,52 @@ def calculate_elbow(data):
     plt.xlabel("Number of clusters", fontsize = 14)
     plt.ylabel("Sum of Square Errors", fontsize = 14)
     plt.show()
+
+
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.metrics import mean_squared_error, r2_score
+
+def train_and_evaluate_regression_models(models, X_train, X_test, y_train, y_test):
+    """
+    Evaluates multiple regression models, prints metrics, and plots actual vs. predicted values.
+
+    Args:
+        models (dict): A dictionary of models where keys are model names and values are model instances.
+        X_train (array-like): Training data features.
+        X_test (array-like): Test data features.
+        y_train (array-like): Training data target variable.
+        y_test (array-like): Test data target variable.
+
+    Returns:
+        dict: A dictionary containing evaluation metrics for each model.
+    """
+
+    results = {}
+    for model_name, model in models.items():
+        model.fit(X_train, y_train)
+        y_pred = model.predict(X_test)
+
+        mse = mean_squared_error(y_test, y_pred)
+        r2 = r2_score(y_test, y_pred)
+        rmse = np.sqrt(mse)
+
+        results[model_name] = {'MSE': mse, 'R2': r2, 'RMSE': rmse}
+
+        # Print the results
+        print(f"Model: {model_name}")
+        print(f"  MSE: {mse:.4f}")
+        print(f"  R2: {r2:.4f}")
+        print(f"  RMSE: {rmse:.4f}")
+        print("-" * 20)
+
+        # Plot actual vs. predicted values
+        plt.figure(figsize=(8, 6))
+        plt.scatter(y_test, y_pred, alpha=0.5)
+        plt.plot([min(y_test), max(y_test)], [min(y_test), max(y_test)], linestyle='--', color='red')
+        plt.xlabel('Actual Values')
+        plt.ylabel('Predicted Values')
+        plt.title(f'Actual vs. Predicted Values - {model_name}')
+        plt.show()
+
+    return results
