@@ -493,4 +493,18 @@ def plot_feature_distribution(df, column):
   plt.ylabel('Frequency')
   plt.show()
 
-    
+   
+
+def calculate_elbow(data):
+    sse = []
+    rng = range(2,11)
+    for i in rng:
+        kmeans = KMeans(n_clusters = i, random_state = 42)
+        kmeans.fit(data)
+        sse.append(kmeans.inertia_)
+   
+    plt.plot(rng, sse, marker= "o")
+    plt.title("ELBOW METHOD", fontsize = 14)
+    plt.xlabel("Number of clusters", fontsize = 14)
+    plt.ylabel("Sum of Square Errors", fontsize = 14)
+    plt.show()
