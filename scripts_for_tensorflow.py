@@ -660,8 +660,10 @@ def create_pie_chart(df, column_name):
   return chart
 
 
-def train_and_evaluate_classification_models(models, X_train, y_train, X_test, y_test):
+def train_and_evaluate_classification_models(models, X_train, y_train, X_test, y_test, X):
     results = {}
+    X_encoded = ohe.transform(X) # Use the fitted ohe object
+    X_encoded = scaler.transform(X_encoded) # Use the fitted scaler object
     for name, model in models.items():
         model.fit(X_train, y_train)
         y_pred = model.predict(X_test)
@@ -680,8 +682,7 @@ def train_and_evaluate_classification_models(models, X_train, y_train, X_test, y
         precision = precision_score(y_test, y_pred, average='weighted')
         print(f"Precision: {precision}")
 
-        X_encoded = ohe.transform(X) # Use the fitted ohe object
-        X_encoded = scaler.transform(X_encoded) # Use the fitted scaler object
+       
         plot_learning_curve(model, X_encoded, y) # Pass the encoded and scaled data
 
         results[name] = {
