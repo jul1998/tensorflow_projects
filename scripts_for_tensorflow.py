@@ -622,5 +622,74 @@ def plot_learning_curve_for_regression(estimator, title, X, y, ylim=None, cv=Non
     plt.legend(loc="best")
     return plt
 
+import altair as alt
+import pandas as pd
 
+def create_pie_chart(df, column_name):
+  """
+  Creates an Altair pie chart showing the relative frequency of unique values in a column.
+
+  Args:
+    df: The Pandas DataFrame containing the data.
+    column_name: The name of the column to visualize.
+
+  Returns:
+    An Altair chart object.
+  """
+  relative_frequency = pd.DataFrame(
+      df[column_name].value_counts(normalize=True).rename_axis(column_name).reset_index(name='relative_frequency')
+  )
+
+  base = alt.Chart(relative_frequency).encode(
+      theta=alt.Theta('relative_frequency', stack=True)
+  ).properties(title=f'Proportion of Contacts by {column_name}')
+
+  pie = base.mark_arc(outerRadius=120).encode(
+      color=alt.Color(column_name),
+      order=alt.Order('relative_frequency', sort='descending'),
+      tooltip=[column_name, alt.Tooltip('relative_frequency', format='.1%')]
+  )
+
+  text = base.mark_text(radius=140).encode(
+      text=alt.Text('relative_frequency', format='.1%'),
+      order=alt.Order('relative_frequency', sort='descending'),
+      color=alt.value('black')
+  )
+
+  chart = pie + text
+  return chart
+
+
+def train_and_evaluate_classification_models(models, X_train, y_train, X_test, y_test):
+    results = {}
+    for name, model in models.items():
+        model.fit(X_train, y_train)
+        y_pred = model.predict(X_test)
+        accuracy = accuracy_score(y_test, y_pred)
+        print(f"Model Name: {name}")
+
+        accuracy = accuracy_score(y_test, y_pred)
+        print(f"Accuracy: {accuracy}")
+
+        f1 = f1_score(y_test, y_pred, average='weighted')
+        print(f"F1 Score: {f1}")
+
+        recall = recall_score(y_test, y_pred, average='weighted')
+        print(f"Recall: {recall}")
+
+        precision = precision_score(y_test, y_pred, average='weighted')
+        print(f"Precision: {precision}")
+
+        X_encoded = ohe.transform(X) # Use the fitted ohe object
+        X_encoded = scaler.transform(X_encoded) # Use the fitted scaler object
+        plot_learning_curve(model, X_encoded, y) # Pass the encoded and scaled data
+
+        results[name] = {
+            "Accuracy": accuracy,
+            "F1 Score": f1,
+            "Recall": recall,
+            "Precision": precision
+        }
+
+    return results
 
