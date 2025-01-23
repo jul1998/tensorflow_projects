@@ -694,3 +694,27 @@ def train_and_evaluate_classification_models(models, X_train, y_train, X_test, y
 
     return results
 
+
+
+def plot_prediction_accuracy(y_true, y_pred):
+  """
+  Creates a horizontal bar plot showing the distribution of correct and incorrect predictions.
+
+  Args:
+    y_true: Series or array-like, containing the true target values.
+    y_pred: Series or array-like, containing the predicted target values.
+  """
+
+  df_predictions = pd.DataFrame({
+      'Actual': y_true, 
+      'Predicted': y_pred, 
+      'is_correct': y_true == y_pred
+  })
+
+  df_predictions.groupby('is_correct').size().plot(kind='barh', color=sns.palettes.mpl_palette('Dark2'))
+  plt.gca().spines[['top', 'right']].set_visible(False)
+  plt.title('Prediction Accuracy')
+  plt.xlabel('Count')
+  plt.ylabel('Correct Prediction')
+  plt.show()
+
