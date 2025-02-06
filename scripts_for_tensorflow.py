@@ -660,31 +660,46 @@ def create_pie_chart(df, column_name):
   return chart
 
 
-def train_and_evaluate_classification_models(models, X_train, y_train, X_test, y_test, X):
+def train_and_evaluate_classification_models(models, X_train_encoded, y_train, X_test_encoded, y_test, show_plot=False):
+    """
+    Train and evaluate classification models.
+
+    Parameters:
+    - models (dict): A dictionary containing model instances.
+    - X_train_encoded (numpy.ndarray): The encoded training features.
+    - y_train (numpy.ndarray): The training targets.
+    - X_test_encoded (numpy.ndarray): The encoded testing features.
+    - y_test (numpy.ndarray): The testing targets.
+    - show_plot (bool, optional): Whether to plot learning curves. Default is False.
+
+    Returns:
+    - results (dict): A dictionary containing the evaluation metrics for each model.
+    """
     results = {}
-    X_encoded = ohe.transform(X) # Use the fitted ohe object
-    X_encoded = scaler.transform(X_encoded) # Use the fitted scaler object
-    for name, model in models.items():
-        model.fit(X_train, y_train)
-        y_pred = model.predict(X_test)
-        accuracy = accuracy_score(y_test, y_pred)
-        print(f"Model Name: {name}")
 
-        accuracy = accuracy_score(y_test, y_pred)
-        print(f"Accuracy: {accuracy}")
+    for name, model in tqdm(models.items(), desc="Training models"):
+        model.fit(X_train_encoded, y_train)  # Use encoded training data
+        y_pred = model.predict(X_test_encoded)  # Use encoded test data
 
+        # Calculate and print metrics
+        accuracy = accuracy_score(y_test, y_pred)
         f1 = f1_score(y_test, y_pred, average='weighted')
-        print(f"F1 Score: {f1}")
-
         recall = recall_score(y_test, y_pred, average='weighted')
-        print(f"Recall: {recall}")
-
         precision = precision_score(y_test, y_pred, average='weighted')
-        print(f"Precision: {precision}")
 
-       
-        plot_learning_curve(model, X_encoded, y) # Pass the encoded and scaled data
+        print(f"\nModel Name: {name}")
+        print(f"Accuracy: {accuracy}")
+        print(f"F1 Score: {f1}")
+        print(f"Recall: {recall}")
+        print(f"Precision: {precision}\n")
 
+        if show_plot:
+            try:
+                plot_learning_curve(model, X_test_encoded, y_test)  # Use encoded test data
+            except AttributeError:
+                print("No learning curve available for this model.")
+
+        # Store results
         results[name] = {
             "Accuracy": accuracy,
             "F1 Score": f1,
@@ -693,6 +708,7 @@ def train_and_evaluate_classification_models(models, X_train, y_train, X_test, y
         }
 
     return results
+
 
 
 
@@ -718,3 +734,39 @@ def plot_prediction_accuracy(y_true, y_pred):
   plt.ylabel('Correct Prediction')
   plt.show()
 
+
+def evaluate_classification_model_on_unseen_data(model, validation_df, training_features, target_feature, ohe, scaler):
+    """
+    Evaluates a trained model on an unseen dataset.
+
+    Args:
+        model: The trained machine learning model.
+        validation_df: The DataFrame containing the unseen data.
+        training_features: A list of features used during model training.
+        target_feature: The name of the target variable column.
+        ohe: The fitted OneHotEncoder object.
+        scaler: The fitted StandardScaler object.
+
+    Returns:
+        None. Prints the evaluation metrics.
+    """
+
+    # 1. Preprocess the validation data
+    validation_data = validation_df[training_features]
+    validation_data_encoded = ohe.transform(validation_data)
+    validation_data_encoded = scaler.transform(validation_data_encoded)
+
+    # 2. Make predictions
+    predictions = model.predict(validation_data_encoded)
+
+    # 3. Evaluate the predictions
+    accuracy = accuracy_score(validation_df[target_feature], predictions)
+    f1 = f1_score(validation_df[target_feature], predictions, average='weighted')
+    recall = recall_score(validation_df[target_feature], predictions, average='weighted')
+    precision = precision_score(validation_df[target_feature], predictions, average='weighted')
+
+    # 4. Print the results
+    print(f"Accuracy: {accuracy}")
+    print(f"F1 Score: {f1}")
+    print(f"Recall: {recall}")
+    print(f"Precision: {precision}")
